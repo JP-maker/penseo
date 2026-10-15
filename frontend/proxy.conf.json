@@ -1,0 +1,4 @@
+{
+  "/api": { "target": "http://backend:8000", "secure": false },
+  "/sanctum": { "target": "http://backend:8000", "secure": false }
+}

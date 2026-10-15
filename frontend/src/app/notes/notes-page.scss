@@ -1,0 +1,502 @@
+.page {
+  padding-bottom: 96px; // marge basse : le bouton « + » ne cache pas la dernière note
+}
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px 0;
+}
+h1 {
+  color: var(--blue);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.chip {
+  border-radius: 999px;
+  &.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #fff;
+  }
+}
+.chip-group {
+  display: inline-flex;
+}
+.chip-delete {
+  border: 0;
+  background: none;
+  color: var(--muted);
+  padding: 0 6px;
+}
+.new-category {
+  display: flex;
+  gap: 4px;
+  input {
+    width: 170px;
+  }
+}
+
+// Mosaïque : le nombre de colonnes s'adapte à la largeur (1 sur téléphone, 4 sur grand écran).
+.notes {
+  columns: 240px;
+  column-gap: 16px;
+}
+.note {
+  --tint: #fff; // remplacée en ligne par la couleur de la première catégorie
+  break-inside: avoid;
+  margin-bottom: 16px;
+  background: color-mix(in srgb, var(--tint) 14%, #fff);
+  border: 1px solid color-mix(in srgb, var(--tint) 35%, var(--border));
+  border-radius: 16px;
+  padding: 16px;
+  h3 {
+    margin: 0 0 6px;
+    overflow-wrap: anywhere;
+  }
+  p {
+    margin: 0 0 10px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+.checklist {
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+  li {
+    margin: 4px 0;
+  }
+  label {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+  }
+}
+.done {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+.tag {
+  font-size: 0.8rem;
+  color: var(--blue-dark);
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+}
+.link {
+  border: 0;
+  background: none;
+  color: var(--muted);
+  padding: 0;
+  text-decoration: underline;
+}
+.empty {
+  color: var(--muted);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  h1 {
+    margin: 0;
+  }
+}
+.user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.banner {
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: #e8f4ff;
+  border: 1px solid var(--blue);
+  &.error {
+    background: #fdecea;
+    border-color: #c0392b;
+  }
+}
+.progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 3px;
+  overflow: hidden;
+  z-index: 10;
+  background: var(--border);
+  // N'apparaît qu'après 300 ms : une réponse rapide ne fait pas clignoter la barre.
+  opacity: 0;
+  animation: appear 0s 300ms forwards;
+  &::after {
+    content: '';
+    display: block;
+    width: 40%;
+    height: 100%;
+    background: var(--blue);
+    animation: slide 1.1s ease-in-out infinite;
+  }
+}
+@keyframes appear {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .progress::after {
+    width: 100%;
+    animation: none;
+  }
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.chip.active .dot {
+  box-shadow: 0 0 0 2px #fff;
+} // la pastille reste visible sur le fond bleu
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.new-category {
+  flex-wrap: wrap;
+  align-items: center;
+}
+.palette {
+  display: inline-flex;
+  gap: 4px;
+}
+.swatch {
+  width: 1.3rem;
+  height: 1.3rem;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  &.selected {
+    border-color: var(--ink);
+  }
+}
+.count {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+.more {
+  display: block;
+  margin: 0 0 10px;
+  color: var(--blue-dark);
+}
+// En-tête de carte : titre à gauche, catégories à droite (elles passent à la ligne si la place manque).
+.note-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 4px 10px;
+  margin: 0 0 6px;
+}
+.note .note-head h3 {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.note-head .tags {
+  margin-left: auto;
+  justify-content: flex-end;
+}
+.note .tags {
+  margin: 0 0 8px;
+} // ligne des catégories, entre le titre et le texte
+
+// Catégories de la carte : pastilles claires, lisibles sur n'importe quelle teinte.
+.tag {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--ink);
+}
+.chip {
+  min-height: 40px;
+}
+.chip.active {
+  background: var(--blue-dark); // assez foncé pour le texte blanc
+  border-color: var(--blue-dark);
+}
+
+// Écran tactile : cibles d'au moins 44 px.
+@media (pointer: coarse) {
+  .chip,
+  .chip-delete,
+  .link,
+  .new-category button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .checklist label {
+    padding: 8px 0;
+  }
+  .swatch {
+    width: 1.9rem;
+    height: 1.9rem;
+  }
+}
+
+// Petit écran : les filtres défilent sur une ligne au lieu de prendre la moitié de la page.
+@media (max-width: 600px) {
+  .content {
+    padding: 16px 12px 0;
+  }
+  .filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+  .filters > *,
+  .new-category {
+    flex: none;
+    flex-wrap: nowrap;
+  }
+}
+
+// Bouton « + » flottant, à portée du pouce.
+.fab {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 5;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 50%;
+  box-shadow: 0 6px 18px rgba(0, 113, 189, 0.4);
+}
+
+// Feuille de saisie : fenêtre centrée sur ordinateur, panneau collé en bas sur téléphone.
+.sheet {
+  width: min(640px, 100%);
+  max-height: 90dvh;
+  padding: 16px;
+  border: 0;
+  border-radius: 16px;
+  color: var(--ink);
+  &::backdrop {
+    background: rgba(11, 37, 64, 0.45);
+  }
+}
+.sheet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  h2 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+}
+.sheet-close {
+  border: 0;
+  background: none;
+  font-size: 1.6rem;
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+}
+@media (max-width: 600px) {
+  .sheet {
+    max-width: 100%;
+    margin: auto 0 0;
+    border-radius: 16px 16px 0 0;
+  }
+}
+
+// Champ de recherche, au-dessus des filtres.
+.search {
+  max-width: 560px;
+  min-height: 44px;
+  margin-bottom: 12px;
+  padding-inline: 18px;
+  border-radius: 999px;
+}
+
+// ---- Habillage « mosaïque colorée » ----
+// En-tête bleu marine pleine largeur : logo, recherche, compte.
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin: 0;
+  padding: 12px 32px;
+  background: #0b2540;
+  color: #fff;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 180px;
+  margin: 0;
+  color: #fff;
+  font-size: 1.3rem;
+}
+.logo {
+  display: inline-flex;
+  align-items: center;
+}
+.topbar .search {
+  flex: 3 1 300px;
+  max-width: 560px;
+  margin: 0;
+  border: 0;
+  background: #1c3a58;
+  color: #fff;
+  &::placeholder {
+    color: #b7c6d6;
+  }
+}
+.account {
+  flex: 1 1 180px;
+  display: flex;
+  justify-content: flex-end;
+}
+.topbar .user {
+  color: #fff;
+}
+.topbar button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 22px;
+  background: #1c3a58;
+  color: #fff;
+}
+
+// Filtres : pastilles teintées par catégorie, la sélection passe en bleu marine.
+.filters > .chip,
+.chip-group {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tint, #7c8da0) 20%, #fff);
+}
+.chip {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 600;
+}
+.chip-group .chip {
+  padding-right: 6px;
+}
+.chip-delete {
+  color: inherit;
+  opacity: 0.7;
+}
+.filters > .chip.active,
+.chip-group:has(.chip.active) {
+  background: #0b2540;
+  color: #fff;
+  .chip,
+  .chip-delete {
+    color: #fff;
+  }
+}
+
+// Cartes : plus rondes, sans bordure, teinte un peu plus présente.
+.note {
+  --tint: #7c8da0;
+  padding: 20px;
+  border: 0;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--tint) 16%, #fff);
+  h3 {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .topbar {
+    padding: 12px;
+  }
+  .topbar .search {
+    order: 3;
+    flex-basis: 100%;
+    max-width: none;
+  }
+}
+
+// ---- Création d'une catégorie : bouton discret dans les filtres, saisie dans une petite feuille ----
+.filters > .add-chip {
+  background: #fff;
+  border: 1.5px dashed #9fb1c3;
+  color: var(--ink);
+}
+.cat-sheet {
+  width: min(420px, 100%);
+}
+.cat-sheet .new-category {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  input {
+    width: 100%;
+  }
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.cat-sheet .palette {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.cat-sheet .swatch {
+  width: 2rem;
+  height: 2rem;
+}
+.cat-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

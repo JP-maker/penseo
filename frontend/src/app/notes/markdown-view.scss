@@ -1,0 +1,48 @@
+:host {
+  display: block;
+}
+p,
+ul,
+ol {
+  margin: 0 0 10px;
+}
+p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+ul,
+ol {
+  padding-left: 1.3rem;
+  overflow-wrap: anywhere;
+}
+h4 {
+  margin: 0 0 6px;
+  overflow-wrap: anywhere;
+}
+.md-h1 {
+  font-size: 1.2rem;
+}
+.md-h2 {
+  font-size: 1.05rem;
+}
+.md-h3 {
+  font-size: 0.95rem;
+}
+.b {
+  font-weight: 700;
+}
+.i {
+  font-style: italic;
+}
+.s {
+  text-decoration: line-through;
+}
+code {
+  font-family: ui-monospace, monospace;
+  background: var(--bg);
+  padding: 0 4px;
+  border-radius: 4px;
+}
+a {
+  color: var(--blue-dark);
+}

@@ -1,0 +1,88 @@
+<form class="composer" (submit)="submit($event)">
+  <input
+    name="title"
+    placeholder="Titre"
+    aria-label="Titre"
+    [attr.maxlength]="limits.title"
+    [value]="title()"
+    (input)="title.set(valueOf($event))"
+  />
+  <div class="toolbar" role="toolbar" aria-label="Mise en forme">
+    @for (tool of tools; track tool.action) {
+      <button
+        type="button"
+        [class]="'tool tool-' + tool.action"
+        [attr.aria-label]="tool.label"
+        [title]="tool.label"
+        (click)="format(contentBox, tool.action)"
+      >
+        {{ tool.text }}
+      </button>
+    }
+  </div>
+  <textarea
+    #contentBox
+    name="content"
+    rows="4"
+    placeholder="Écrire une note…"
+    aria-label="Contenu"
+    [attr.maxlength]="limits.content"
+    [value]="content()"
+    (input)="content.set(valueOf($event))"
+  ></textarea>
+
+  @for (item of items(); track item.id) {
+    <div class="item">
+      <input
+        type="checkbox"
+        aria-label="Élément fait"
+        [checked]="item.done"
+        (change)="toggleItem(item.id)"
+      />
+      <input
+        class="item-text"
+        placeholder="Élément"
+        aria-label="Texte de l'élément"
+        [attr.maxlength]="limits.item"
+        [attr.data-item-id]="item.id"
+        [value]="item.text"
+        (input)="setItemText(item.id, valueOf($event))"
+        (keydown.enter)="onItemEnter($event, item.id)"
+      />
+      <button
+        type="button"
+        class="icon"
+        aria-label="Retirer cet élément"
+        (click)="removeItem(item.id)"
+      >
+        ×
+      </button>
+    </div>
+  }
+
+  @if (store.categories().length) {
+    <fieldset class="cats">
+      <legend>Catégories</legend>
+      @for (c of store.categories(); track c.id) {
+        <label class="cat-choice">
+          <input
+            type="checkbox"
+            [checked]="categoryIds().includes(c.id)"
+            (change)="toggleCategory(c.id)"
+          />
+          <span class="dot" [style.background]="c.color"></span>{{ c.name }}
+        </label>
+      }
+    </fieldset>
+  }
+
+  <div class="composer-actions">
+    <button type="button" class="add-item" (click)="addItem()">+ Case à cocher</button>
+    @if (note()) {
+      <button type="button" (click)="cancel()">Annuler</button>
+    }
+    <button type="submit" class="primary" [disabled]="saving()">
+      {{ saving() ? 'Enregistrement…' : note() ? 'Enregistrer' : 'Ajouter' }}
+    </button>
+  </div>
+</form>

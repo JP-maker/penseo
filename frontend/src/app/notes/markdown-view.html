@@ -1,0 +1,62 @@
+<!-- Modèle réutilisé pour tout texte en ligne : paragraphes, titres et éléments de liste. -->
+<ng-template #inline let-parts>
+  @for (part of parts; track $index) {
+    @if (part.href) {
+      <a
+        [href]="part.href"
+        target="_blank"
+        rel="noopener noreferrer"
+        [class.b]="part.bold"
+        [class.i]="part.italic"
+        [class.s]="part.strike"
+        >{{ part.text }}</a
+      >
+    } @else if (part.code) {
+      <code>{{ part.text }}</code>
+    } @else {
+      <span [class.b]="part.bold" [class.i]="part.italic" [class.s]="part.strike">{{
+        part.text
+      }}</span>
+    }
+  }
+</ng-template>
+
+@for (block of blocks(); track $index) {
+  @if (block.type === 'p') {
+    <p>
+      <ng-container
+        [ngTemplateOutlet]="inline"
+        [ngTemplateOutletContext]="{ $implicit: block.inlines }"
+      />
+    </p>
+  } @else if (block.type === 'h') {
+    <h4 [class]="'md-h' + block.level">
+      <ng-container
+        [ngTemplateOutlet]="inline"
+        [ngTemplateOutletContext]="{ $implicit: block.inlines }"
+      />
+    </h4>
+  } @else if (block.type === 'ul') {
+    <ul>
+      @for (item of block.items; track $index) {
+        <li>
+          <ng-container
+            [ngTemplateOutlet]="inline"
+            [ngTemplateOutletContext]="{ $implicit: item }"
+          />
+        </li>
+      }
+    </ul>
+  } @else {
+    <ol>
+      @for (item of block.items; track $index) {
+        <li>
+          <ng-container
+            [ngTemplateOutlet]="inline"
+            [ngTemplateOutletContext]="{ $implicit: item }"
+          />
+        </li>
+      }
+    </ol>
+  }
+}

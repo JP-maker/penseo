@@ -1,0 +1,50 @@
+.composer {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.composer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  select {
+    flex: 1;
+    min-width: 140px;
+  }
+}
+.item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.item-text {
+  flex: 1;
+}
+.icon {
+  border: 0;
+  background: none;
+  color: var(--muted);
+  padding: 0 6px;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.tool {
+  padding: 4px 10px;
+  min-width: 2rem;
+}
+.tool-bold {
+  font-weight: 700;
+}
+.tool-italic {
+  font-style: italic;
+}
+.tool-strike {
+  text-decoration: line-through;
+}
+.tool-code {
+  font-family: ui-monospace, monospace;
+}

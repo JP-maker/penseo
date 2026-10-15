@@ -1,0 +1,222 @@
+<main class="page" [attr.aria-busy]="loading.active()">
+  @if (loading.active()) {
+    <div class="progress" role="progressbar" aria-label="Chargement en cours"></div>
+  }
+
+  <header class="topbar">
+    <h1 class="brand">
+      <span class="logo" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 64 64">
+          <path d="M17 6h22l12 12v36a4 4 0 0 1-4 4H17a4 4 0 0 1-4-4V10a4 4 0 0 1 4-4z" fill="#fff" />
+          <path d="M39 6l12 12h-9a3 3 0 0 1-3-3z" fill="#bcd9f0" />
+          <path d="M21 34l7 7 14-15" fill="none" stroke="#0071bd" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+      Penséo
+    </h1>
+    <input
+      type="search"
+      class="search"
+      name="search"
+      placeholder="Rechercher…"
+      aria-label="Rechercher dans les notes"
+      [value]="query()"
+      (input)="onSearch($event)"
+    />
+    <div class="account">
+      @if (auth.user(); as user) {
+        <span class="user">
+          {{ user.name }}
+          <button type="button" (click)="auth.logout(); showAuth.set(false)">Se déconnecter</button>
+        </span>
+      } @else {
+        <button type="button" (click)="showAuth.set(!showAuth())">Connexion</button>
+      }
+    </div>
+  </header>
+
+  <div class="content">
+
+  @if (notifier.message(); as message) {
+    <p class="banner error" role="alert">
+      {{ message }}
+      <button type="button" class="link" (click)="notifier.dismiss()">Fermer</button>
+    </p>
+  }
+  @if (auth.notice(); as notice) {
+    <p class="banner" role="status">{{ notice }}</p>
+  }
+
+  @if (!auth.user()) {
+    @if (showAuth()) {
+      <app-auth-form />
+    } @else {
+      <p class="hint">
+        Tes notes sont enregistrées dans ce navigateur uniquement. Connecte-toi pour les retrouver
+        partout.
+      </p>
+    }
+  }
+
+  <nav class="filters" aria-label="Filtrer par catégorie">
+    <button
+      type="button"
+      class="chip"
+      [class.active]="store.selectedCategoryId() === null"
+      [attr.aria-pressed]="store.selectedCategoryId() === null"
+      (click)="store.selectCategory(null)"
+    >
+      Toutes <span class="count">{{ store.total() }}</span>
+    </button>
+    @for (c of store.categories(); track c.id) {
+      <span class="chip-group" [style.--tint]="c.color">
+        <button
+          type="button"
+          class="chip"
+          [class.active]="store.selectedCategoryId() === c.id"
+          [attr.aria-pressed]="store.selectedCategoryId() === c.id"
+          (click)="store.selectCategory(c.id)"
+        >
+          <span class="dot" [style.background]="c.color"></span>{{ c.name }}
+          <span class="count">{{ store.counts().get(c.id) ?? 0 }}</span>
+        </button>
+        <button
+          type="button"
+          class="chip-delete"
+          [attr.aria-label]="'Supprimer la catégorie ' + c.name"
+          (click)="store.deleteCategory(c.id)"
+        >
+          ×
+        </button>
+      </span>
+    }
+    <button type="button" class="chip add-chip" (click)="openCategoryForm()">+ Catégorie</button>
+  </nav>
+
+  <section class="notes" aria-label="Notes">
+    @for (note of visibleNotes(); track note.id) {
+      @let categories = noteCategories(note);
+      <article class="note" [style.--tint]="categories[0]?.color">
+        @if (note.title) {
+          <h3>{{ note.title }}</h3>
+        }
+        @if (categories.length) {
+          <div class="tags">
+            @for (c of categories; track c.id) {
+              <span class="tag"
+                ><span class="dot" [style.background]="c.color"></span>{{ c.name }}</span
+              >
+            }
+          </div>
+        }
+        @if (note.content) {
+          <app-markdown [source]="excerpt(note)" />
+        }
+        @if (firstUrl(note.content); as url) {
+          <app-link-preview [url]="url" />
+        }
+        @if (note.items.length) {
+          <ul class="checklist">
+            @for (item of visibleItems(note); track item.id) {
+              <li>
+                <label>
+                  <input
+                    type="checkbox"
+                    [checked]="item.done"
+                    (change)="store.toggleItem(note.id, item.id)"
+                  />
+                  <span [class.done]="item.done">{{ item.text }}</span>
+                </label>
+              </li>
+            }
+          </ul>
+        }
+        @if (isLong(note)) {
+          <button
+            type="button"
+            class="link more"
+            [attr.aria-expanded]="isExpanded(note)"
+            (click)="toggleExpanded(note.id)"
+          >
+            {{ isExpanded(note) ? 'Voir moins' : 'Voir plus' }}
+          </button>
+        }
+        <footer>
+          <span class="actions">
+            <button type="button" class="link" (click)="openForm(note)">Modifier</button>
+            <button
+              type="button"
+              class="link"
+              aria-label="Supprimer la note"
+              (click)="onDelete(note.id)"
+            >
+              Supprimer
+            </button>
+          </span>
+        </footer>
+      </article>
+    } @empty {
+      <p class="empty">{{
+          loading.active()
+            ? 'Chargement…'
+            : query()
+              ? 'Aucune note ne correspond.'
+              : 'Aucune note pour le moment.'
+        }}</p>
+    }
+  </section>
+
+  <button type="button" class="primary fab" aria-label="Nouvelle note" (click)="openForm(null)">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+  </button>
+
+  <dialog #sheet class="sheet" aria-labelledby="sheet-title" (close)="editing.set(null)">
+    <header class="sheet-head">
+      <h2 id="sheet-title">{{ editing() ? 'Modifier la note' : 'Nouvelle note' }}</h2>
+      <button type="button" class="sheet-close" aria-label="Fermer" (click)="closeForm()">×</button>
+    </header>
+    <app-note-form [note]="editing()" (done)="closeForm()" />
+  </dialog>
+  <dialog #catSheet class="sheet cat-sheet" aria-labelledby="cat-title">
+    <header class="sheet-head">
+      <h2 id="cat-title">Nouvelle catégorie</h2>
+      <button type="button" class="sheet-close" aria-label="Fermer" (click)="closeCategoryForm()">
+        ×
+      </button>
+    </header>
+    <form class="new-category" (submit)="onAddCategory($event, newCategory)">
+      <label class="field">
+        Nom
+        <input
+          #newCategory
+          name="newCategory"
+          autofocus
+          placeholder="Ex. : Travail"
+          [attr.maxlength]="limits.categoryName"
+        />
+      </label>
+      <span class="field">
+        Couleur
+        <span class="palette" role="radiogroup" aria-label="Couleur de la catégorie">
+          @for (color of colors; track color.value) {
+            <button
+              type="button"
+              class="swatch"
+              role="radio"
+              [class.selected]="newColor() === color.value"
+              [attr.aria-checked]="newColor() === color.value"
+              [attr.aria-label]="color.label"
+              [style.background]="color.value"
+              (click)="newColor.set(color.value)"
+            ></button>
+          }
+        </span>
+      </span>
+      <div class="cat-actions">
+        <button type="button" (click)="closeCategoryForm()">Annuler</button>
+        <button type="submit" class="primary">Créer</button>
+      </div>
+    </form>
+  </dialog>
+  </div>
+</main>

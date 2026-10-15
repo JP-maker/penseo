@@ -1,0 +1,73 @@
+// Jetons de design inspirés d'Infomaniak : approximation, on les affinera à l'étape design.
+:root {
+  --blue: #0098ff;
+  --blue-dark: #0079cc;
+  --ink: #1b2a3a;
+  --muted: #5a6a7c;
+  --bg: #f4f7fa;
+  --card: #fff;
+  --border: #dde4ec;
+  --radius: 8px;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  color: var(--ink);
+  background: #fff;
+}
+
+// Contrôles de formulaire partagés par tous les composants.
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+input:not([type='checkbox']),
+textarea,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  &:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 1px;
+  }
+}
+input[type='checkbox'] {
+  accent-color: var(--blue);
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
+}
+button {
+  cursor: pointer;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  padding: 8px 14px;
+}
+button:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+.primary {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+  &:hover {
+    background: var(--blue-dark);
+  }
+}
+.dot {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  flex: none;
+}

@@ -1,0 +1,29 @@
+.auth {
+  display: grid;
+  gap: 8px;
+  max-width: 360px;
+  margin-bottom: 20px;
+  h2 {
+    margin: 0;
+  }
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.toggle {
+  border: 0;
+  background: none;
+  color: var(--blue-dark);
+  padding: 0;
+  text-decoration: underline;
+}
+small {
+  color: var(--muted);
+}
+.error {
+  margin: 0;
+  color: #c0392b;
+}
