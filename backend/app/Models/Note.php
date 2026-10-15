@@ -13,11 +13,11 @@ class Note extends Model
     use HasUuids;
 
     // Les catégories passent par la relation categories() : jamais remplies depuis la requête brute.
-    protected $fillable = ['title', 'content', 'items'];
+    protected $fillable = ['title', 'content', 'items', 'encrypted'];
 
     protected function casts(): array
     {
-        return ['items' => 'array'];
+        return ['items' => 'array', 'encrypted' => 'boolean'];
     }
 
     public function categories(): BelongsToMany

@@ -32,6 +32,11 @@ export interface Note {
   content: string;
   items: ChecklistItem[]; // vide = note de texte simple
   categoryIds: string[]; // vide = sans catégorie
+  /**
+   * Vrai si `content` est un bloc chiffré dans le navigateur (voir note-crypto.ts) : le texte ET les cases
+   * à cocher y sont enfermés, `items` reste alors vide. Absent = false (notes enregistrées avant cette option).
+   */
+  encrypted?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -45,7 +50,7 @@ export interface LinkPreview {
 }
 
 /** Ce que l'utilisateur saisit : le reste (id, dates) est généré par le store. */
-export type NoteDraft = Pick<Note, 'title' | 'content' | 'categoryIds'> & {
+export type NoteDraft = Pick<Note, 'title' | 'content' | 'categoryIds' | 'encrypted'> & {
   items?: ChecklistItem[];
 };
 
@@ -53,6 +58,8 @@ export type NoteDraft = Pick<Note, 'title' | 'content' | 'categoryIds'> & {
 export const LIMITS = {
   title: 200,
   content: 10_000,
+  /** Taille maximale du bloc chiffré : le texte et les cases, en JSON, puis en base64 (environ 4/3). */
+  encryptedContent: 250_000,
   categoryName: 50,
   item: 200,
   items: 100,
@@ -86,6 +93,7 @@ export const isNote = (v: unknown): v is Note =>
   v['items'].every(isChecklistItem) &&
   Array.isArray(v['categoryIds']) &&
   v['categoryIds'].every((id) => typeof id === 'string') &&
+  (v['encrypted'] === undefined || typeof v['encrypted'] === 'boolean') &&
   typeof v['createdAt'] === 'string' &&
   typeof v['updatedAt'] === 'string';
 

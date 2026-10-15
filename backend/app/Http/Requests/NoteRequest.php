@@ -10,6 +10,9 @@ use Illuminate\Validation\Validator;
 
 class NoteRequest extends FormRequest
 {
+    /** Forme d'un bloc chiffré : v1.<itérations>.<sel>.<vecteur>.<données>, en base64. */
+    private const CIPHER_FORMAT = '/^v1\.\d{1,9}\.[A-Za-z0-9+\/=]+\.[A-Za-z0-9+\/=]+\.[A-Za-z0-9+\/=]+$/';
+
     public function authorize(): bool
     {
         return true; // l'accès est déjà réservé aux utilisateurs connectés par la route
@@ -18,10 +21,18 @@ class NoteRequest extends FormRequest
     /** @return array<string, mixed> */
     public function rules(): array
     {
+        // Note chiffrée dans le navigateur : `content` est un bloc opaque (voir note-crypto.ts côté front).
+        // Le serveur n'en lit rien, mais refuse tout ce qui n'a pas la forme d'un bloc chiffré : une note
+        // marquée « chiffrée » ne doit pas pouvoir contenir du texte en clair, ni des cases à cocher en clair.
+        $encrypted = $this->boolean('encrypted');
+
         return [
             'title' => ['nullable', 'string', 'max:200'],
-            'content' => ['nullable', 'string', 'max:10000'],
-            'items' => ['present', 'array', 'max:100'],
+            'encrypted' => ['sometimes', 'boolean'],
+            'content' => $encrypted
+                ? ['required', 'string', 'max:250000', 'regex:' . self::CIPHER_FORMAT]
+                : ['nullable', 'string', 'max:10000'],
+            'items' => ['present', 'array', 'max:' . ($encrypted ? 0 : 100)],
             'items.*.id' => ['required', 'uuid', 'distinct'],
             'items.*.text' => ['required', 'string', 'max:200'],
             'items.*.done' => ['required', 'boolean'],

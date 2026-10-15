@@ -76,6 +76,41 @@
     </fieldset>
   }
 
+  <div class="crypt">
+    <label class="crypt-toggle">
+      <input type="checkbox" [checked]="encrypt()" (change)="encrypt.set(!encrypt())" />
+      Chiffrer cette note
+    </label>
+    @if (encrypt()) {
+      <p class="crypt-hint">
+        Le texte et les cases sont chiffrés dans ton navigateur : le serveur ne peut pas les lire.
+        <strong>La passphrase n'est enregistrée nulle part : si tu l'oublies, la note est perdue.</strong>
+      </p>
+      <input
+        type="password"
+        name="passphrase"
+        autocomplete="new-password"
+        placeholder="Passphrase"
+        aria-label="Passphrase"
+        [value]="passphrase()"
+        (input)="passphrase.set(valueOf($event))"
+      />
+      <input
+        type="password"
+        name="passphraseConfirm"
+        autocomplete="new-password"
+        placeholder="Confirmer la passphrase"
+        aria-label="Confirmer la passphrase"
+        [value]="confirmation()"
+        (input)="confirmation.set(valueOf($event))"
+      />
+      <p class="crypt-hint">Au moins {{ minPassphrase }} caractères : une phrase de plusieurs mots est idéale.</p>
+    }
+    @if (formError()) {
+      <p class="crypt-error" role="alert">{{ formError() }}</p>
+    }
+  </div>
+
   <div class="composer-actions">
     <button type="button" class="add-item" (click)="addItem()">+ Case à cocher</button>
     @if (note()) {

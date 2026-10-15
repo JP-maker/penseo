@@ -42,6 +42,7 @@ describe('HttpNoteRepository', () => {
       'categoryIds',
       'content',
       'createdAt',
+      'encrypted',
       'items',
       'title',
     ]);
@@ -55,5 +56,19 @@ describe('HttpNoteRepository', () => {
       .expectOne({ method: 'DELETE', url: '/api/notes/n1' })
       .flush(null, { status: 204, statusText: 'No Content' });
     await result;
+  });
+
+  it('envoie encrypted à true pour une note chiffrée, à false sinon', async () => {
+    const encrypted = repo.saveNote({ ...note, encrypted: true });
+    const first = http.expectOne((r) => r.method === 'PUT');
+    expect(first.request.body.encrypted).toBe(true);
+    first.flush(note);
+    await encrypted;
+
+    const plain = repo.saveNote(note); // sans le champ : valeur par défaut
+    const second = http.expectOne((r) => r.method === 'PUT');
+    expect(second.request.body.encrypted).toBe(false);
+    second.flush(note);
+    await plain;
   });
 });

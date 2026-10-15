@@ -3,7 +3,7 @@ import { Category, COLORS, DEFAULT_COLOR, LIMITS, Note, NoteDraft } from './mode
 import { NoteRepository } from './note-repository';
 
 /** Partie d'une note qui vient de la saisie, une fois nettoyée. */
-type CleanDraft = Pick<Note, 'title' | 'content' | 'categoryIds' | 'items'>;
+type CleanDraft = Pick<Note, 'title' | 'content' | 'categoryIds' | 'items'> & { encrypted: boolean };
 
 /** État de l'application (signals) + règles métier. Ne sait pas où les données sont stockées. */
 @Injectable({ providedIn: 'root' })
@@ -145,11 +145,19 @@ export class NotesStore {
   /** Nettoie la saisie (espaces, longueurs, cases vides, catégories inconnues). Null si la note serait vide. */
   private sanitize(draft: NoteDraft): CleanDraft | null {
     const title = draft.title.trim().slice(0, LIMITS.title);
-    const content = draft.content.trim().slice(0, LIMITS.content);
-    const items = (draft.items ?? [])
-      .map((i) => ({ id: i.id, text: i.text.trim().slice(0, LIMITS.item), done: i.done }))
-      .filter((i) => i.text)
-      .slice(0, LIMITS.items);
+    const encrypted = draft.encrypted === true;
+    // Un bloc chiffré est opaque : on ne le raccourcit pas comme un texte (il deviendrait indéchiffrable).
+    // La limite est large exprès ; le formulaire garantit qu'un texte permis ne la dépasse pas une fois chiffré.
+    const content = draft.content
+      .trim()
+      .slice(0, encrypted ? LIMITS.encryptedContent : LIMITS.content);
+    // Les cases d'une note chiffrée sont dans le bloc : en clair à côté, elles annuleraient le chiffrement.
+    const items = encrypted
+      ? []
+      : (draft.items ?? [])
+          .map((i) => ({ id: i.id, text: i.text.trim().slice(0, LIMITS.item), done: i.done }))
+          .filter((i) => i.text)
+          .slice(0, LIMITS.items);
     if (!title && !content && items.length === 0) return null;
 
     // Sans doublon, et seulement des catégories qui existent.
@@ -157,7 +165,7 @@ export class NotesStore {
     const categoryIds = [...new Set(draft.categoryIds)]
       .filter((id) => known.has(id))
       .slice(0, LIMITS.categoriesPerNote);
-    return { title, content, items, categoryIds };
+    return { title, content, items, categoryIds, encrypted };
   }
 
   private replace(note: Note): void {

@@ -24,8 +24,14 @@ describe('matchesQuery', () => {
     expect(matchesQuery(note, ['Travail'], 'travail')).toBe(true);
   });
 
-  it('exige tous les mots, dans n\'importe quel ordre', () => {
+  it("exige tous les mots, dans n'importe quel ordre", () => {
     expect(matchesQuery(note, [], 'produit reunion')).toBe(true);
     expect(matchesQuery(note, [], 'produit voiture')).toBe(false);
+  });
+
+  it('ne cherche pas dans le bloc d\'une note chiffrée, mais bien dans son titre', () => {
+    const secret = { ...note, encrypted: true, content: 'v1.1000.abcdef.abcdef.abcdef', items: [] };
+    expect(matchesQuery(secret, [], 'abcdef')).toBe(false);
+    expect(matchesQuery(secret, [], 'reunion')).toBe(true);
   });
 });

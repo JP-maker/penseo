@@ -9,7 +9,9 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { ChecklistItem, LIMITS, Note } from '../../data/models';
+import { ChecklistItem, LIMITS, Note, NoteDraft } from '../../data/models';
+import { encryptText, MIN_PASSPHRASE_LENGTH } from '../../utils/note-crypto';
+import { packSecret } from '../../utils/note-secret';
 import { NotesStore } from '../../data/notes.store';
 import { applyFormat, FormatAction } from '../../utils/markdown';
 
@@ -29,6 +31,11 @@ export class NoteForm {
   readonly note = input<Note | null>(null);
   /** Émis quand la note est enregistrée, ou quand on annule. */
   readonly done = output<void>();
+  /** Émis après un enregistrement réussi (et pas à l'annulation), avec la note enregistrée. */
+  readonly saved = output<Note>();
+  /** Passphrase de la note si elle est déjà déverrouillée : on ne la redemande pas pour la modifier. */
+  readonly passphraseHint = input('');
+  protected readonly minPassphrase = MIN_PASSPHRASE_LENGTH;
   protected readonly saving = signal(false);
   protected readonly tools: { action: FormatAction; label: string; text: string }[] = [
     { action: 'bold', label: 'Gras', text: 'B' },
@@ -46,6 +53,12 @@ export class NoteForm {
   protected readonly content = linkedSignal(() => this.note()?.content ?? '');
   protected readonly categoryIds = linkedSignal<string[]>(() => this.note()?.categoryIds ?? []);
   protected readonly items = linkedSignal<ChecklistItem[]>(() => this.note()?.items ?? []);
+
+  // Chiffrement : la passphrase vit seulement dans ces champs, elle n'est ni enregistrée ni envoyée.
+  protected readonly encrypt = linkedSignal(() => this.note()?.encrypted === true);
+  protected readonly passphrase = linkedSignal(() => this.passphraseHint());
+  protected readonly confirmation = linkedSignal(() => this.passphraseHint());
+  protected readonly formError = signal('');
 
   protected valueOf(event: Event): string {
     return (event.target as HTMLInputElement).value;
@@ -120,26 +133,66 @@ export class NoteForm {
   protected async submit(event: Event): Promise<void> {
     event.preventDefault();
     if (this.saving()) return; // un second clic pendant l'attente créerait une note en double
-    const draft = {
-      title: this.title(),
-      content: this.content(),
-      categoryIds: this.categoryIds(),
-      items: this.items(),
-    };
     const current = this.note();
 
     this.saving.set(true);
+    this.formError.set('');
     try {
+      const draft = this.encrypt() ? await this.encryptedDraft() : this.plainDraft();
+      if (!draft) return; // l'erreur est déjà affichée
+
       const saved = current
         ? await this.store.updateNote(current.id, draft)
         : await this.store.addNote(draft);
       // On ne vide le formulaire que si l'enregistrement a réussi : rien n'est perdu en cas d'échec.
       if (saved) {
         this.reset();
+        this.saved.emit(saved);
         this.done.emit();
       }
     } finally {
       this.saving.set(false); // y compris sur erreur, sinon le bouton resterait bloqué
+    }
+  }
+
+  private plainDraft(): NoteDraft {
+    return {
+      title: this.title(),
+      content: this.content(),
+      categoryIds: this.categoryIds(),
+      items: this.items(),
+    };
+  }
+
+  /** Chiffre le texte et les cases dans le navigateur. Null (avec un message) si la saisie ne convient pas. */
+  private async encryptedDraft(): Promise<NoteDraft | null> {
+    const passphrase = this.passphrase();
+    if (passphrase.length < MIN_PASSPHRASE_LENGTH) {
+      this.formError.set(`La passphrase doit faire au moins ${MIN_PASSPHRASE_LENGTH} caractères.`);
+      return null;
+    }
+    if (passphrase !== this.confirmation()) {
+      this.formError.set('Les deux passphrases sont différentes.');
+      return null;
+    }
+    // Même nettoyage que le store : ici le serveur ne verra plus rien, il ne pourra pas le refaire.
+    const content = this.content().trim().slice(0, LIMITS.content);
+    const items = this.items()
+      .map((i) => ({ ...i, text: i.text.trim().slice(0, LIMITS.item) }))
+      .filter((i) => i.text)
+      .slice(0, LIMITS.items);
+    if (!content && items.length === 0) {
+      this.formError.set('Écris un texte ou ajoute une case avant de chiffrer la note.');
+      return null;
+    }
+
+    try {
+      const block = await encryptText(packSecret({ content, items }), passphrase);
+      return { title: this.title(), content: block, categoryIds: this.categoryIds(), encrypted: true };
+    } catch {
+      // crypto.subtle n'existe qu'en HTTPS (ou sur localhost).
+      this.formError.set('Le chiffrement n\'est pas disponible sur cette connexion (HTTPS requis).');
+      return null;
     }
   }
 
@@ -153,5 +206,9 @@ export class NoteForm {
     this.content.set('');
     this.categoryIds.set([]);
     this.items.set([]);
+    this.encrypt.set(false);
+    this.passphrase.set('');
+    this.confirmation.set('');
+    this.formError.set('');
   }
 }

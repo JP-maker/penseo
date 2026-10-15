@@ -18,6 +18,7 @@ class NoteResource extends JsonResource
             'title' => $this->title,
             'content' => $this->content,
             'items' => $this->items,
+            'encrypted' => (bool) $this->encrypted,
             'categoryIds' => $this->categories->pluck('id')->values(),
             'createdAt' => $this->created_at->toJSON(),
             'updatedAt' => $this->updated_at->toJSON(),

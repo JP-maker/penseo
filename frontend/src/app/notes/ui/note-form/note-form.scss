@@ -48,3 +48,26 @@
 .tool-code {
   font-family: ui-monospace, monospace;
 }
+
+// Option de chiffrement.
+.crypt {
+  display: grid;
+  gap: 8px;
+}
+.crypt-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-weight: 600;
+}
+.crypt-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.crypt-error {
+  margin: 0;
+  color: #b3261e;
+  font-weight: 600;
+}

@@ -35,6 +35,7 @@ class NoteController extends Controller
             'title' => $data['title'] ?? '',
             'content' => $data['content'] ?? '',
             'items' => $data['items'],
+            'encrypted' => $data['encrypted'] ?? false,
         ]);
         // La date d'origine n'est reprise qu'à la création : c'est elle qui conserve l'ordre à l'import.
         if (!$note->exists && isset($data['createdAt'])) {

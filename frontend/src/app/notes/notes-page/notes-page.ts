@@ -14,12 +14,21 @@ import { ErrorNotifier } from '../../core/error-notifier';
 import { LoadingState } from '../../core/loading';
 import { firstUrl } from '../utils/first-url';
 import { LinkPreviewCard } from '../ui/link-preview-card/link-preview-card';
-import { Category, COLORS, DEFAULT_COLOR, LIMITS, Note } from '../data/models';
+import { Category, COLORS, ChecklistItem, DEFAULT_COLOR, LIMITS, Note } from '../data/models';
 import { NoteForm } from '../ui/note-form/note-form';
 import { NotesStore } from '../data/notes.store';
 import { MarkdownView } from '../ui/markdown-view/markdown-view';
 import { EXCERPT, truncateText } from '../utils/note-excerpt';
+import { WrongPassphraseError, decryptText } from '../utils/note-crypto';
 import { matchesQuery } from '../utils/note-search';
+import { unpackSecret } from '../utils/note-secret';
+
+/** Contenu d'une note chiffrée tant qu'elle est déverrouillée. Reste en mémoire : un rechargement la reverrouille. */
+interface Unlocked {
+  content: string;
+  items: ChecklistItem[];
+  passphrase: string; // gardée pour ne pas la redemander à chaque modification ; effacée au verrouillage
+}
 
 /** Page principale : en-tête et connexion, formulaire, filtres par catégorie, liste des notes. */
 @Component({
@@ -59,6 +68,25 @@ export class NotesPage {
       .filter((n) => matchesQuery(n, this.noteCategories(n).map((c) => c.name), query));
   });
 
+  protected readonly unlocked = signal<ReadonlyMap<string, Unlocked>>(new Map());
+  /** Note dont l'utilisateur saisit la passphrase. */
+  protected readonly unlocking = signal<Note | null>(null);
+  protected readonly unlockError = signal('');
+  protected readonly unlockBusy = signal(false);
+  private readonly unlockSheet = viewChild<ElementRef<HTMLDialogElement>>('unlockSheet');
+
+  /** Note envoyée au formulaire : pour une note chiffrée déverrouillée, son contenu en clair. */
+  protected readonly formNote = computed<Note | null>(() => {
+    const note = this.editing();
+    if (!note?.encrypted) return note;
+    const open = this.unlocked().get(note.id);
+    return open ? { ...note, content: open.content, items: open.items } : null;
+  });
+  protected readonly formPassphrase = computed(() => {
+    const note = this.editing();
+    return (note && this.unlocked().get(note.id)?.passphrase) || '';
+  });
+
   /** Feuille de création / modification (élément <dialog> natif : focus piégé, Échap, fond grisé). */
   private readonly sheet = viewChild<ElementRef<HTMLDialogElement>>('sheet');
   /** Feuille de création d'une catégorie. */
@@ -71,6 +99,7 @@ export class NotesPage {
       this.auth.user();
       untracked(() => {
         this.closeForm();
+        this.unlocked.set(new Map()); // les passphrases d'un autre compte ne doivent pas rester en mémoire
         void this.store.init();
       });
     });
@@ -142,8 +171,53 @@ export class NotesPage {
     else dialog.removeAttribute('open');
   }
 
+  protected openUnlock(note: Note): void {
+    this.unlocking.set(note);
+    this.unlockError.set('');
+    this.show(this.unlockSheet()?.nativeElement);
+  }
+
+  protected closeUnlock(): void {
+    this.unlocking.set(null);
+    this.hide(this.unlockSheet()?.nativeElement);
+  }
+
+  /** Déchiffre dans le navigateur ; la passphrase n'est envoyée nulle part. */
+  protected async unlock(event: Event, field: HTMLInputElement): Promise<void> {
+    event.preventDefault();
+    const note = this.unlocking();
+    if (!note || this.unlockBusy()) return;
+
+    this.unlockBusy.set(true);
+    this.unlockError.set('');
+    try {
+      const passphrase = field.value;
+      const secret = unpackSecret(await decryptText(note.content, passphrase));
+      this.unlocked.update((map) => new Map(map).set(note.id, { ...secret, passphrase }));
+      field.value = '';
+      this.closeUnlock();
+    } catch (error) {
+      this.unlockError.set(
+        error instanceof WrongPassphraseError
+          ? 'Passphrase incorrecte.'
+          : 'Cette note ne peut pas être déchiffrée ici.',
+      );
+    } finally {
+      this.unlockBusy.set(false);
+    }
+  }
+
+  protected lock(id: string): void {
+    this.unlocked.update((map) => {
+      const next = new Map(map);
+      next.delete(id);
+      return next;
+    });
+  }
+
   protected async onDelete(id: string): Promise<void> {
     if (this.editing()?.id === id) this.closeForm();
+    this.lock(id);
     await this.store.deleteNote(id);
   }
 

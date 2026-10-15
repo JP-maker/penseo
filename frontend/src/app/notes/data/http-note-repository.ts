@@ -22,6 +22,7 @@ export class HttpNoteRepository extends NoteRepository {
         content,
         items,
         categoryIds,
+        encrypted: note.encrypted === true,
         createdAt,
       }),
     );
