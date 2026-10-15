@@ -11,6 +11,7 @@ import {
 import { AuthForm } from '../../auth/auth-form/auth-form';
 import { AuthService } from '../../auth/auth.service';
 import { ErrorNotifier } from '../../core/error-notifier';
+import { APP_INFO } from '../../core/app-info';
 import { LoadingState } from '../../core/loading';
 import { firstUrl } from '../utils/first-url';
 import { LinkPreviewCard } from '../ui/link-preview-card/link-preview-card';
@@ -45,6 +46,10 @@ export class NotesPage {
   protected readonly limits = LIMITS;
   protected readonly firstUrl = firstUrl;
   protected readonly colors = COLORS;
+
+  protected readonly info = APP_INFO;
+  protected readonly year = new Date().getFullYear();
+  protected readonly mailHref = `mailto:${APP_INFO.contactEmail}?subject=${encodeURIComponent('Contact Penséo')}`;
 
   /** Couleur choisie pour la prochaine catégorie créée. */
   protected readonly newColor = signal<string>(DEFAULT_COLOR);

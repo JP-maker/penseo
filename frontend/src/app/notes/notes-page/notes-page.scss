@@ -1,7 +1,15 @@
 .page {
-  padding-bottom: 96px; // marge basse : le bouton « + » ne cache pas la dernière note
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh; // pied de page collé en bas, même si la page est courte
 }
 .content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  width: 100%;
+  box-sizing: border-box;
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px 16px 0;
@@ -296,10 +304,13 @@ h1 {
 
 // Bouton « + » flottant, à portée du pouce.
 .fab {
-  position: fixed;
-  right: 24px;
+  // collant en bas de l'écran, mais il s'arrête à la fin du contenu : jamais sur le pied de page
+  position: sticky;
   bottom: 24px;
   z-index: 5;
+  align-self: flex-end;
+  margin: auto 8px 0 0; // « auto » en haut : le bouton descend jusqu'au pied de page
+  flex-shrink: 0;
   width: 60px;
   height: 60px;
   display: flex;
@@ -535,4 +546,72 @@ h1 {
   margin: 0;
   color: #b3261e;
   font-weight: 600;
+}
+
+// Actions d'une carte : icônes (le nom reste lu par les lecteurs d'écran grâce à aria-label).
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  &:hover {
+    background: rgba(255, 255, 255, 0.75);
+    color: var(--ink);
+  }
+  &.danger:hover {
+    color: #b3261e;
+  }
+}
+.note footer .actions {
+  gap: 0;
+  margin-right: -10px; // l'icône de droite s'aligne sur le bord du texte
+}
+
+// ---- Pied de page ----
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1200px;
+  margin: 32px auto 0;
+  padding: 20px 16px 24px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.85rem;
+  p {
+    margin: 0;
+  }
+}
+.mail-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: #0b2540;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  &:hover {
+    background: #1c3a58;
+  }
+  &:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+  }
+}
+.version {
+  font-variant-numeric: tabular-nums;
 }
