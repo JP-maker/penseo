@@ -8,18 +8,18 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { AuthForm } from '../auth/auth-form';
-import { AuthService } from '../auth/auth.service';
-import { ErrorNotifier } from '../error-notifier';
-import { LoadingState } from '../loading';
-import { firstUrl } from './first-url';
-import { LinkPreviewCard } from './link-preview-card';
-import { Category, COLORS, DEFAULT_COLOR, LIMITS, Note } from './models';
-import { NoteForm } from './note-form';
-import { NotesStore } from './notes.store';
-import { MarkdownView } from './markdown-view';
-import { EXCERPT, truncateText } from './note-excerpt';
-import { matchesQuery } from './note-search';
+import { AuthForm } from '../../auth/auth-form/auth-form';
+import { AuthService } from '../../auth/auth.service';
+import { ErrorNotifier } from '../../core/error-notifier';
+import { LoadingState } from '../../core/loading';
+import { firstUrl } from '../utils/first-url';
+import { LinkPreviewCard } from '../ui/link-preview-card/link-preview-card';
+import { Category, COLORS, DEFAULT_COLOR, LIMITS, Note } from '../data/models';
+import { NoteForm } from '../ui/note-form/note-form';
+import { NotesStore } from '../data/notes.store';
+import { MarkdownView } from '../ui/markdown-view/markdown-view';
+import { EXCERPT, truncateText } from '../utils/note-excerpt';
+import { matchesQuery } from '../utils/note-search';
 
 /** Page principale : en-tête et connexion, formulaire, filtres par catégorie, liste des notes. */
 @Component({

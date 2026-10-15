@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
-import { LinkPreviewService } from './link-preview.service';
-import { LinkPreview } from './models';
+import { LinkPreviewService } from '../../data/link-preview.service';
+import { LinkPreview } from '../../data/models';
 
 /** Carte d'aperçu d'une URL. N'affiche rien tant que l'aperçu n'est pas là, ou s'il est indisponible. */
 @Component({

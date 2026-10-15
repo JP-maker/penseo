@@ -1,4 +1,4 @@
-import { Note } from './models';
+import { Note } from '../data/models';
 
 /** Minuscules et sans accents : « ecole » trouve « École ». */
 const fold = (text: string): string =>

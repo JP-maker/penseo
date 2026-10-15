@@ -1,4 +1,4 @@
-import { Note } from './models';
+import { Note } from '../data/models';
 import { matchesQuery } from './note-search';
 
 const note = {

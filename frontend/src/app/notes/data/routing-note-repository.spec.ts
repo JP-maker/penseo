@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { AuthService, User } from '../auth/auth.service';
+import { AuthService, User } from '../../auth/auth.service';
 import { Note } from './models';
 import { RoutingNoteRepository } from './routing-note-repository';
 

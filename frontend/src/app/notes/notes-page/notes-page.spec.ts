@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { InMemoryNoteRepository } from '../testing/in-memory-note-repository';
-import { NoteRepository } from './note-repository';
+import { InMemoryNoteRepository } from '../../testing/in-memory-note-repository';
+import { NoteRepository } from '../data/note-repository';
 import { NotesPage } from './notes-page';
-import { LoadingState } from '../loading';
-import { NotesStore } from './notes.store';
+import { LoadingState } from '../../core/loading';
+import { NotesStore } from '../data/notes.store';
 
 // Laisse les promesses du store se terminer avant de relire le DOM.
 const flush = () => new Promise<void>((resolve) => setTimeout(resolve));

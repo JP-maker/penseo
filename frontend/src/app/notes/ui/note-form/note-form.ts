@@ -9,9 +9,9 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { ChecklistItem, LIMITS, Note } from './models';
-import { NotesStore } from './notes.store';
-import { applyFormat, FormatAction } from './markdown';
+import { ChecklistItem, LIMITS, Note } from '../../data/models';
+import { NotesStore } from '../../data/notes.store';
+import { applyFormat, FormatAction } from '../../utils/markdown';
 
 /** Formulaire de note : crée une note, ou modifie celle reçue dans `note`. */
 @Component({

@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { AuthService } from './auth.service';
+import { AuthService } from '../auth.service';
 
 type Mode = 'login' | 'register';
 

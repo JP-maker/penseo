@@ -1,6 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
-import { parseMarkdown } from './markdown';
+import { parseMarkdown } from '../../utils/markdown';
 
 /** Affiche une note mise en forme. Tout passe par des interpolations Angular (échappées) : aucun innerHTML. */
 @Component({

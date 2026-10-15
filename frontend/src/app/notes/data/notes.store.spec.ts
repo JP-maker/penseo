@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { InMemoryNoteRepository } from '../testing/in-memory-note-repository';
+import { InMemoryNoteRepository } from '../../testing/in-memory-note-repository';
 import { DEFAULT_COLOR, Note } from './models';
 import { NoteRepository } from './note-repository';
 import { NotesStore } from './notes.store';

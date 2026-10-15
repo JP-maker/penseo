@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 import { AuthForm } from './auth-form';
-import { AuthService } from './auth.service';
+import { AuthService } from '../auth.service';
 
 const flush = () => new Promise<void>((resolve) => setTimeout(resolve));
 

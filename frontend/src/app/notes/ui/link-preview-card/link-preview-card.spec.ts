@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { LinkPreviewCard } from './link-preview-card';
-import { LinkPreviewService } from './link-preview.service';
-import { LinkPreview } from './models';
+import { LinkPreviewService } from '../../data/link-preview.service';
+import { LinkPreview } from '../../data/models';
 
 const flush = () => new Promise<void>((resolve) => setTimeout(resolve));
 

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NotesPage } from './notes/notes-page';
+import { NotesPage } from './notes/notes-page/notes-page';
 
 @Component({
   selector: 'app-root',

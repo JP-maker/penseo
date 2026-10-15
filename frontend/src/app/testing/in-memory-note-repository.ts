@@ -1,5 +1,5 @@
-import { Category, Note } from '../notes/models';
-import { NoteRepository } from '../notes/note-repository';
+import { Category, Note } from '../notes/data/models';
+import { NoteRepository } from '../notes/data/note-repository';
 
 /** Double de test : même contrat que le vrai stockage, sans localStorage. */
 export class InMemoryNoteRepository extends NoteRepository {

@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../../auth/auth.service';
 import { HttpNoteRepository } from './http-note-repository';
 import { LocalNoteRepository } from './local-note-repository';
 import { Category, Note } from './models';

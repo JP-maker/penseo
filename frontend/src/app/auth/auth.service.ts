@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { LocalImportService } from '../notes/local-import.service';
+import { LocalImportService } from '../notes/data/local-import.service';
 
 export interface User {
   name: string;
