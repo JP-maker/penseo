@@ -48,6 +48,8 @@ export class NotesPage {
   protected readonly colors = COLORS;
 
   protected readonly info = APP_INFO;
+  /** « v0.2.0 » pour une version publiée, « dev » en développement. */
+  protected readonly versionLabel = /^\d/.test(APP_INFO.version) ? `v${APP_INFO.version}` : APP_INFO.version;
   protected readonly year = new Date().getFullYear();
   protected readonly mailHref = `mailto:${APP_INFO.contactEmail}?subject=${encodeURIComponent('Contact Penséo')}`;
 

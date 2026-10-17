@@ -18,9 +18,8 @@ services:
     # Aucun port publié : la base n'est joignable que par l'application, à l'intérieur de Docker.
 
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
+    # Image publiée par le pipeline. APP_TAG (ex. v0.2.0) est écrit dans .env par deploy/deploy.sh.
+    image: ghcr.io/jp-maker/penseo:${APP_TAG:-latest}
     restart: unless-stopped
     depends_on:
       db:

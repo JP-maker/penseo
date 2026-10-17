@@ -28,7 +28,7 @@ describe('AuthService', () => {
 
   /** Amène le service à l'état "connecté" sans passer par login. */
   async function signIn() {
-    localStorage.setItem('memento.session', '1');
+    localStorage.setItem('penseo.session', '1');
     const init = service.init();
     http.expectOne('/api/user').flush(ALICE);
     await init;
@@ -45,13 +45,13 @@ describe('AuthService', () => {
   });
 
   it('init : session expirée (401) → invité, indice effacé', async () => {
-    localStorage.setItem('memento.session', '1');
+    localStorage.setItem('penseo.session', '1');
     const init = service.init();
     http.expectOne('/api/user').flush({}, { status: 401, statusText: 'Unauthorized' });
     await init;
 
     expect(service.user()).toBeNull();
-    expect(localStorage.getItem('memento.session')).toBeNull();
+    expect(localStorage.getItem('penseo.session')).toBeNull();
   });
 
   it('login : demande le cookie CSRF, ouvre la session puis passe en mode connecté', async () => {
@@ -64,7 +64,7 @@ describe('AuthService', () => {
 
     expect(await result).toBeNull();
     expect(service.user()).toEqual(ALICE);
-    expect(localStorage.getItem('memento.session')).toBe('1');
+    expect(localStorage.getItem('penseo.session')).toBe('1');
   });
 
   it('login : identifiants refusés → message du serveur, pas de session', async () => {
@@ -75,7 +75,7 @@ describe('AuthService', () => {
 
     expect(await result).toBe('Identifiants invalides.');
     expect(service.user()).toBeNull();
-    expect(localStorage.getItem('memento.session')).toBeNull();
+    expect(localStorage.getItem('penseo.session')).toBeNull();
   });
 
   it('login : trop de tentatives (429) → message en français', async () => {
@@ -102,7 +102,7 @@ describe('AuthService', () => {
       id: 'n1', title: 'A', content: '', items: [], categoryId: null,
       createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z',
     };
-    localStorage.setItem('memento.notes', JSON.stringify([note]));
+    localStorage.setItem('penseo.notes', JSON.stringify([note]));
 
     const result = service.login('a@x.test', 'pw');
     http.expectOne('/sanctum/csrf-cookie').flush(null);
@@ -114,7 +114,7 @@ describe('AuthService', () => {
     expect(await result).toBeNull();
     expect(service.user()).toEqual(ALICE);
     expect(service.notice()).toContain('importées');
-    expect(JSON.parse(localStorage.getItem('memento.notes')!)).toHaveLength(1);
+    expect(JSON.parse(localStorage.getItem('penseo.notes')!)).toHaveLength(1);
   });
 
   it('login : défi anti-robot refusé → message dédié', async () => {
@@ -147,6 +147,6 @@ describe('AuthService', () => {
     await result;
 
     expect(service.user()).toBeNull();
-    expect(localStorage.getItem('memento.session')).toBeNull();
+    expect(localStorage.getItem('penseo.session')).toBeNull();
   });
 });

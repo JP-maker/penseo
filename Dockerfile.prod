@@ -3,10 +3,14 @@
 
 # 1. Frontend : compile Angular
 FROM node:22-alpine AS web
+ARG APP_VERSION=dev
 WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
 COPY frontend/ ./
+# Écrit le numéro de version dans le pied de page du site (voir core/app-info.ts)
+RUN sed -i "s/version: '[^']*'/version: '${APP_VERSION}'/" src/app/core/app-info.ts \
+ && grep -q "version: '${APP_VERSION}'" src/app/core/app-info.ts
 RUN npm run build
 
 # 2. Backend : dépendances PHP sans les outils de développement
@@ -19,6 +23,7 @@ RUN composer dump-autoload --no-dev --optimize --no-scripts
 
 # 3. Image finale
 FROM dunglas/frankenphp:1-php8.4-alpine
+LABEL org.opencontainers.image.source="https://github.com/JP-maker/penseo"
 RUN install-php-extensions pdo_pgsql opcache
 WORKDIR /app
 COPY --from=vendor /app /app

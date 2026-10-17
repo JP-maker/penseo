@@ -9,7 +9,7 @@ export interface User {
   email: string;
 }
 
-const SESSION_HINT = 'memento.session';
+const SESSION_HINT = 'penseo.session';
 
 /**
  * Indice (pas une preuve) qu'une session existe : évite d'appeler /api/user, et d'afficher un 401 rouge
