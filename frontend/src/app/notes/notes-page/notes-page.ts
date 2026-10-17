@@ -215,7 +215,7 @@ export class NotesPage {
     } catch (error) {
       this.unlockError.set(
         error instanceof WrongPassphraseError
-          ? 'Passphrase incorrecte.'
+          ? 'Clé de chiffrement incorrecte.'
           : 'Cette note ne peut pas être déchiffrée ici.',
       );
     } finally {

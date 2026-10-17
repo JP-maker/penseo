@@ -21,7 +21,7 @@ const IV_BYTES = 12; // taille recommandée pour AES-GCM
 /** Passphrase incorrecte, ou texte chiffré modifié : GCM ne permet pas de distinguer les deux. */
 export class WrongPassphraseError extends Error {
   constructor() {
-    super('Passphrase incorrecte ou note altérée.');
+    super('Clé de chiffrement incorrecte ou note altérée.');
     this.name = 'WrongPassphraseError';
   }
 }
@@ -76,7 +76,7 @@ export async function encryptText(
   passphrase: string,
   iterations = PBKDF2_ITERATIONS, // paramètre réservé aux tests, qui n'ont pas besoin d'être lents
 ): Promise<string> {
-  if (!passphrase) throw new Error('La passphrase est obligatoire.');
+  if (!passphrase) throw new Error('La clé de chiffrement est obligatoire.');
   const salt = crypto.getRandomValues(new Uint8Array(SALT_BYTES));
   const iv = crypto.getRandomValues(new Uint8Array(IV_BYTES));
   const key = await deriveKey(passphrase, salt, iterations);

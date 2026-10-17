@@ -272,7 +272,7 @@
     </header>
     <form class="new-category" (submit)="unlock($event, secret)">
       <label class="field">
-        Passphrase
+        Clé de chiffrement
         <input #secret type="password" name="unlockPassphrase" autocomplete="off" autofocus />
       </label>
       @if (unlockError()) {

@@ -84,14 +84,14 @@
     @if (encrypt()) {
       <p class="crypt-hint">
         Le texte et les cases sont chiffrés dans ton navigateur : le serveur ne peut pas les lire.
-        <strong>La passphrase n'est enregistrée nulle part : si tu l'oublies, la note est perdue.</strong>
+        <strong>La clé de chiffrement n'est enregistrée nulle part : si tu l'oublies, la note est perdue.</strong>
       </p>
       <input
         type="password"
         name="passphrase"
         autocomplete="new-password"
-        placeholder="Passphrase"
-        aria-label="Passphrase"
+        placeholder="Clé de chiffrement"
+        aria-label="Clé de chiffrement"
         [value]="passphrase()"
         (input)="passphrase.set(valueOf($event))"
       />
@@ -99,8 +99,8 @@
         type="password"
         name="passphraseConfirm"
         autocomplete="new-password"
-        placeholder="Confirmer la passphrase"
-        aria-label="Confirmer la passphrase"
+        placeholder="Confirmer la clé de chiffrement"
+        aria-label="Confirmer la clé de chiffrement"
         [value]="confirmation()"
         (input)="confirmation.set(valueOf($event))"
       />

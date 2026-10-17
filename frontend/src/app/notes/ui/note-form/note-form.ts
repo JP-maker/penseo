@@ -168,11 +168,11 @@ export class NoteForm {
   private async encryptedDraft(): Promise<NoteDraft | null> {
     const passphrase = this.passphrase();
     if (passphrase.length < MIN_PASSPHRASE_LENGTH) {
-      this.formError.set(`La passphrase doit faire au moins ${MIN_PASSPHRASE_LENGTH} caractères.`);
+      this.formError.set(`La clé de chiffrement doit faire au moins ${MIN_PASSPHRASE_LENGTH} caractères.`);
       return null;
     }
     if (passphrase !== this.confirmation()) {
-      this.formError.set('Les deux passphrases sont différentes.');
+      this.formError.set('Les deux clés de chiffrement sont différentes.');
       return null;
     }
     // Même nettoyage que le store : ici le serveur ne verra plus rien, il ne pourra pas le refaire.
