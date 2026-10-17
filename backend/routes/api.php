@@ -4,6 +4,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LinkPreviewController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\CaptchaController;
+use App\Http\Middleware\RequireHuman;
 use Illuminate\Support\Facades\Route;
 
 // Ouvert aux visiteurs sans compte (mode local) : la limite de débit protège le serveur.
@@ -11,8 +13,9 @@ Route::get('/link-preview', LinkPreviewController::class)->middleware('throttle:
 
 // Anti force brute : 5 essais par minute et par IP.
 // shortcut: limite par IP seulement ; à passer en IP + email si des utilisateurs partagent une IP (NAT).
-Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+Route::get('/captcha', CaptchaController::class)->middleware('throttle:30,1');
+Route::post('/register', [AuthController::class, 'register'])->middleware(['throttle:5,1', RequireHuman::class]);
+Route::post('/login', [AuthController::class, 'login'])->middleware(['throttle:5,1', RequireHuman::class]);
 
 // 240 requêtes/min par utilisateur : l'import des notes locales se fait par une requête par note.
 // shortcut: un import de plus de 240 éléments sera freiné ; le front devra réessayer.

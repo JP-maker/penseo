@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { NotesPage } from './notes/notes-page/notes-page';
+import { RouterOutlet } from '@angular/router';
 
+/** Coquille de l'application : la page affichée dépend de l'adresse (voir app.routes.ts). */
 @Component({
   selector: 'app-root',
-  imports: [NotesPage],
-  template: '<app-notes-page />',
+  imports: [RouterOutlet],
+  template: '<router-outlet />',
 })
 export class App {}

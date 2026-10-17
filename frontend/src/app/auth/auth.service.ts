@@ -2,13 +2,14 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { LocalImportService } from '../notes/data/local-import.service';
+import { CaptchaService } from './captcha.service';
 
 export interface User {
   name: string;
   email: string;
 }
 
-const SESSION_HINT = 'penseo.session';
+const SESSION_HINT = 'memento.session';
 
 /**
  * Indice (pas une preuve) qu'une session existe : évite d'appeler /api/user, et d'afficher un 401 rouge
@@ -43,6 +44,7 @@ const hint = {
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly importer = inject(LocalImportService);
+  private readonly captcha = inject(CaptchaService);
 
   private readonly _user = signal<User | null>(null);
   private readonly _notice = signal<string | null>(null);
@@ -61,13 +63,16 @@ export class AuthService {
     }
   }
 
-  /** Retournent un message d'erreur, ou null si tout s'est bien passé. */
-  register(name: string, email: string, password: string): Promise<string | null> {
-    return this.authenticate('/api/register', { name, email, password });
+  /**
+   * Retournent un message d'erreur, ou null si tout s'est bien passé.
+   * `website` est le champ piège du formulaire : toujours vide pour un humain.
+   */
+  register(name: string, email: string, password: string, website = ''): Promise<string | null> {
+    return this.authenticate('/api/register', { name, email, password }, website);
   }
 
-  login(email: string, password: string): Promise<string | null> {
-    return this.authenticate('/api/login', { email, password });
+  login(email: string, password: string, website = ''): Promise<string | null> {
+    return this.authenticate('/api/login', { email, password }, website);
   }
 
   async logout(): Promise<void> {
@@ -82,11 +87,13 @@ export class AuthService {
     this._user.set(null); // la page recharge alors les notes du navigateur (vides après l'import)
   }
 
-  private async authenticate(url: string, body: object): Promise<string | null> {
+  private async authenticate(url: string, body: object, website: string): Promise<string | null> {
     this._notice.set(null);
     try {
       await this.csrf();
-      const user = await firstValueFrom(this.http.post<User>(url, body));
+      // Défi anti-robot résolu juste avant l'envoi : il est à usage unique et expire au bout de 5 minutes.
+      const captcha = await this.captcha.solve();
+      const user = await firstValueFrom(this.http.post<User>(url, { ...body, captcha, website }));
       hint.set();
       // Import AVANT de passer en mode connecté : l'écran montre encore les notes locales pendant ce temps.
       await this.importLocalNotes();
@@ -120,6 +127,7 @@ function friendlyError(error: unknown): string {
     if (error.status === 429) return 'Trop de tentatives : réessaie dans une minute.';
     if (error.status === 422) {
       const errors = error.error?.errors ?? {};
+      if (errors.captcha) return 'Vérification anti-robot échouée : réessaie.';
       if (errors.password) return 'Mot de passe invalide : 12 caractères minimum.';
       if (errors.email) return 'Adresse email invalide ou déjà utilisée.';
       if (errors.name) return 'Nom invalide.';

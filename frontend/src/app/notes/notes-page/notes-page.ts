@@ -8,7 +8,7 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { AuthForm } from '../../auth/auth-form/auth-form';
+import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { ErrorNotifier } from '../../core/error-notifier';
 import { APP_INFO } from '../../core/app-info';
@@ -34,7 +34,7 @@ interface Unlocked {
 /** Page principale : en-tête et connexion, formulaire, filtres par catégorie, liste des notes. */
 @Component({
   selector: 'app-notes-page',
-  imports: [NoteForm, LinkPreviewCard, AuthForm, MarkdownView],
+  imports: [NoteForm, LinkPreviewCard, MarkdownView],
   templateUrl: './notes-page.html',
   styleUrl: './notes-page.scss',
 })
@@ -57,7 +57,7 @@ export class NotesPage {
   // shortcut: instantané de la note au moment du clic ; une case cochée dans la liste pendant
   // l'édition serait écrasée à l'enregistrement. À corriger si ça gêne à l'usage.
   protected readonly editing = signal<Note | null>(null);
-  protected readonly showAuth = signal(false);
+  private readonly router = inject(Router);
 
   /** Notes dépliées par l'utilisateur (« Voir plus »). */
   protected readonly expanded = signal<ReadonlySet<string>>(new Set());
@@ -108,6 +108,10 @@ export class NotesPage {
         void this.store.init();
       });
     });
+  }
+
+  protected goToLogin(): void {
+    void this.router.navigateByUrl('/connexion');
   }
 
   protected onSearch(event: Event): void {

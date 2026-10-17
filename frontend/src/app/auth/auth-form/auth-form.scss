@@ -1,24 +1,28 @@
 .auth {
   display: grid;
-  gap: 8px;
-  max-width: 360px;
-  margin-bottom: 20px;
-  h2 {
-    margin: 0;
+  gap: 12px;
+  h1 {
+    margin: 0 0 4px;
+    font-size: 1.4rem;
+    color: #0b2540;
   }
-}
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
+  input {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 44px;
+  }
+  button.primary {
+    min-height: 46px;
+    border-radius: 23px;
+  }
 }
 .toggle {
   border: 0;
   background: none;
   color: var(--blue-dark);
-  padding: 0;
+  padding: 8px;
   text-decoration: underline;
+  cursor: pointer;
 }
 small {
   color: var(--muted);
@@ -26,4 +30,12 @@ small {
 .error {
   margin: 0;
   color: #c0392b;
+}
+// Hors écran plutôt que display:none, que certains robots savent détecter.
+.trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }

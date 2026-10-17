@@ -1,0 +1,46 @@
+:host {
+  display: block;
+}
+.login {
+  box-sizing: border-box;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 24px 16px;
+  background: #0b2540;
+  color: #fff;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.card {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 420px;
+  padding: 28px 24px;
+  border-radius: 18px;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+.guest {
+  color: #fff;
+  text-decoration: underline;
+  padding: 8px;
+}
+.note {
+  margin: -12px 0 0;
+  color: #b8c7d8;
+  font-size: 0.85rem;
+  text-align: center;
+}

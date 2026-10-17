@@ -1,58 +1,32 @@
 <form class="auth" (submit)="submit($event)">
-  <h2>{{ mode() === 'login' ? 'Connexion' : 'Créer un compte' }}</h2>
+  <h1>{{ mode() === 'login' ? 'Connexion' : 'Créer un compte' }}</h1>
 
   @if (mode() === 'register') {
-    <input
-      name="name"
-      placeholder="Nom"
-      aria-label="Nom"
-      autocomplete="name"
-      required
-      maxlength="100"
-      [value]="name()"
-      (input)="name.set(valueOf($event))"
-    />
+    <input name="name" placeholder="Nom" aria-label="Nom" autocomplete="name" required maxlength="100"
+      [value]="name()" (input)="name.set(valueOf($event))" />
   }
-  <input
-    type="email"
-    name="email"
-    placeholder="Email"
-    aria-label="Email"
-    autocomplete="email"
-    required
-    maxlength="255"
-    [value]="email()"
-    (input)="email.set(valueOf($event))"
-  />
-  <input
-    type="password"
-    name="password"
-    placeholder="Mot de passe"
-    aria-label="Mot de passe"
-    required
-    maxlength="128"
-    [attr.autocomplete]="mode() === 'login' ? 'current-password' : 'new-password'"
-    [value]="password()"
-    (input)="password.set(valueOf($event))"
-  />
+  <input type="email" name="email" placeholder="Email" aria-label="Email" autocomplete="email" required
+    maxlength="255" [value]="email()" (input)="email.set(valueOf($event))" />
+  <input type="password" name="password" placeholder="Mot de passe" aria-label="Mot de passe" required
+    maxlength="128" [attr.autocomplete]="mode() === 'login' ? 'current-password' : 'new-password'"
+    [value]="password()" (input)="password.set(valueOf($event))" />
   @if (mode() === 'register') {
     <small>12 caractères minimum.</small>
   }
+
+  <!-- Champ piège : invisible et hors parcours clavier. Un robot qui remplit tout est refusé par le serveur. -->
+  <div class="trap" aria-hidden="true">
+    <input name="website" tabindex="-1" autocomplete="off" [value]="website()" (input)="website.set(valueOf($event))" />
+  </div>
 
   @if (error(); as message) {
     <p class="error" role="alert">{{ message }}</p>
   }
 
-  <div class="actions">
-    <button type="submit" class="primary" [disabled]="busy()">
-      @if (busy()) {
-        Un instant…
-      } @else {
-        {{ mode() === 'login' ? 'Se connecter' : 'Créer mon compte' }}
-      }
-    </button>
-    <button type="button" class="toggle" (click)="toggle()">
-      {{ mode() === 'login' ? 'Pas de compte ? Créer un compte' : 'Déjà un compte ? Se connecter' }}
-    </button>
-  </div>
+  <button type="submit" class="primary" [disabled]="busy()">
+    {{ busy() ? 'Vérification…' : mode() === 'login' ? 'Se connecter' : 'Créer mon compte' }}
+  </button>
+  <button type="button" class="toggle" (click)="toggle()">
+    {{ mode() === 'login' ? 'Pas de compte ? Créer un compte' : 'Déjà un compte ? Se connecter' }}
+  </button>
 </form>

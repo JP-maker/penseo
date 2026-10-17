@@ -149,10 +149,10 @@ h1 {
 .progress {
   position: fixed;
   inset: 0 0 auto 0;
-  height: 3px;
+  height: 6px;
   overflow: hidden;
   z-index: 10;
-  background: var(--border);
+  background: rgba(0, 163, 255, 0.25);
   // N'apparaît qu'après 300 ms : une réponse rapide ne fait pas clignoter la barre.
   opacity: 0;
   animation: appear 0s 300ms forwards;
@@ -161,8 +161,43 @@ h1 {
     display: block;
     width: 40%;
     height: 100%;
-    background: var(--blue);
+    background: #00a3ff;
+    box-shadow: 0 0 12px 2px rgba(0, 163, 255, 0.7);
     animation: slide 1.1s ease-in-out infinite;
+  }
+}
+// Pastille centrée sous la barre : visible même sur l'en-tête bleu foncé.
+.loading-pill {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: #fff;
+  color: #0b2540;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(11, 37, 64, 0.3);
+  opacity: 0;
+  animation: appear 0s 300ms forwards; // comme la barre : rien si la réponse est rapide
+}
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #cfe6f7;
+  border-top-color: #0071bd;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 @keyframes appear {
@@ -181,6 +216,9 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
   .progress::after {
     width: 100%;
+    animation: none;
+  }
+  .spinner {
     animation: none;
   }
 }

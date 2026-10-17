@@ -1,6 +1,7 @@
 <main class="page" [attr.aria-busy]="loading.active()">
   @if (loading.active()) {
     <div class="progress" role="progressbar" aria-label="Chargement en cours"></div>
+    <p class="loading-pill" aria-hidden="true"><span class="spinner"></span>Chargement…</p>
   }
 
   <header class="topbar">
@@ -27,10 +28,10 @@
       @if (auth.user(); as user) {
         <span class="user">
           {{ user.name }}
-          <button type="button" (click)="auth.logout(); showAuth.set(false)">Se déconnecter</button>
+          <button type="button" (click)="auth.logout()">Se déconnecter</button>
         </span>
       } @else {
-        <button type="button" (click)="showAuth.set(!showAuth())">Connexion</button>
+        <button type="button" (click)="goToLogin()">Connexion</button>
       }
     </div>
   </header>
@@ -48,14 +49,10 @@
   }
 
   @if (!auth.user()) {
-    @if (showAuth()) {
-      <app-auth-form />
-    } @else {
-      <p class="hint">
-        Tes notes sont enregistrées dans ce navigateur uniquement. Connecte-toi pour les retrouver
-        partout.
-      </p>
-    }
+    <p class="hint">
+      Tes notes sont enregistrées dans ce navigateur uniquement. Connecte-toi pour les retrouver
+      partout.
+    </p>
   }
 
   <nav class="filters" aria-label="Filtrer par catégorie">

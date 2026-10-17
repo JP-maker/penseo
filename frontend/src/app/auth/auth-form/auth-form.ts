@@ -3,7 +3,7 @@ import { AuthService } from '../auth.service';
 
 type Mode = 'login' | 'register';
 
-/** Connexion / création de compte. Une fois connecté, la page le retire d'elle-même (user non nul). */
+/** Connexion / création de compte. Une fois connecté, la page de connexion renvoie vers les notes. */
 @Component({
   selector: 'app-auth-form',
   templateUrl: './auth-form.html',
@@ -16,6 +16,8 @@ export class AuthForm {
   protected readonly name = signal('');
   protected readonly email = signal('');
   protected readonly password = signal('');
+  /** Champ piège : caché aux humains, rempli par les robots. */
+  protected readonly website = signal('');
   protected readonly error = signal<string | null>(null);
   protected readonly busy = signal(false);
 
@@ -36,8 +38,8 @@ export class AuthForm {
 
     const error =
       this.mode() === 'login'
-        ? await this.auth.login(this.email(), this.password())
-        : await this.auth.register(this.name(), this.email(), this.password());
+        ? await this.auth.login(this.email(), this.password(), this.website())
+        : await this.auth.register(this.name(), this.email(), this.password(), this.website());
 
     this.busy.set(false);
     if (error) {
