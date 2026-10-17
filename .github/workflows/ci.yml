@@ -1,0 +1,99 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Tests backend (Laravel)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: penseo_test
+          POSTGRES_USER: penseo
+          POSTGRES_PASSWORD: test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U penseo -d penseo_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      # Valeurs de test sans aucune valeur secrète : la base n'existe que le temps de ce job.
+      APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      DB_HOST: 127.0.0.1
+      DB_USERNAME: penseo
+      DB_PASSWORD: test
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: pdo_pgsql
+          tools: composer:v2
+      - run: composer install --prefer-dist --no-interaction --no-progress
+      - run: php artisan test
+
+  frontend:
+    name: Tests et compilation (Angular)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npx ng test --no-watch
+      - run: npm run build
+
+  docker:
+    name: Image de production
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      # Construit l'image sans la publier : détecte une erreur de Dockerfile avant le déploiement.
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.prod
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Déploiement sur penseo.fr
+    needs: [backend, frontend, docker]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency:
+      group: deploy
+      cancel-in-progress: false
+    steps:
+      - name: Connexion SSH et mise à jour du serveur
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          # La clé n'a le droit que d'exécuter deploy/deploy.sh sur le serveur (commande imposée côté serveur).
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes deploy@penseo.fr
+      - name: Vérification que le site répond
+        run: curl -fsS --retry 12 --retry-delay 5 --retry-all-errors https://penseo.fr/api/captcha > /dev/null
