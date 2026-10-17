@@ -1,0 +1,43 @@
+{
+	email {$ACME_EMAIL}
+	frankenphp
+}
+
+# www redirige vers le domaine principal
+www.{$DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
+}
+
+{$DOMAIN} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		# Pas de script externe ni en ligne. Les images des aperçus de liens peuvent venir de n'importe quel site en HTTPS.
+		# En cas de page blanche après une mise à jour, renomme cet en-tête en Content-Security-Policy-Report-Only
+		# et regarde la console du navigateur (F12) pour voir ce qui est bloqué.
+		Content-Security-Policy "default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+		-Server
+	}
+
+	# L'API et le cookie CSRF de Sanctum : Laravel
+	@api path /api/* /sanctum/*
+	handle @api {
+		root * /app/public
+		php_server
+	}
+
+	# Tout le reste : le site Angular (une seule page, donc index.html pour les adresses inconnues)
+	handle {
+		root * /srv/web
+		header Cache-Control "no-cache"
+		@hashed path *.js *.css
+		header @hashed Cache-Control "public, max-age=31536000, immutable"
+		try_files {path} /index.html
+		file_server
+	}
+}

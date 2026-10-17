@@ -650,6 +650,31 @@ h1 {
     outline-offset: 2px;
   }
 }
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.donate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 2px solid #0b2540;
+  border-radius: 999px;
+  color: #0b2540;
+  font-weight: 600;
+  text-decoration: none;
+  box-sizing: border-box;
+  &:hover {
+    background: #e8f0f7;
+  }
+  &:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+  }
+}
 .version {
   font-variant-numeric: tabular-nums;
 }

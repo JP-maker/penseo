@@ -1,0 +1,59 @@
+:host {
+  display: block;
+}
+.donate {
+  box-sizing: border-box;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 24px 16px;
+  background: #0b2540;
+  color: #fff;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.card {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 420px;
+  padding: 28px 24px;
+  border-radius: 18px;
+  background: #fff;
+  color: var(--ink);
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  h1 {
+    margin: 0 0 8px;
+    font-size: 1.4rem;
+    color: #0b2540;
+  }
+  p {
+    margin: 0 0 16px;
+  }
+}
+.qr {
+  display: block;
+  margin: 0 auto 4px;
+  max-width: 100%;
+  height: auto;
+}
+.hint {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.back {
+  color: #fff;
+  text-decoration: underline;
+  padding: 8px;
+}

@@ -1,0 +1,60 @@
+name: penseo
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?définis POSTGRES_PASSWORD dans .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # Aucun port publié : la base n'est joignable que par l'application, à l'intérieur de Docker.
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?définis DOMAIN dans .env}
+      ACME_EMAIL: ${ACME_EMAIL:?définis ACME_EMAIL dans .env}
+      APP_NAME: Penséo
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_KEY: ${APP_KEY:?définis APP_KEY dans .env}
+      APP_URL: https://${DOMAIN}
+      LOG_CHANNEL: stderr
+      LOG_LEVEL: warning
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB}
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      SESSION_DRIVER: database
+      SESSION_LIFETIME: 120
+      SESSION_SECURE_COOKIE: "true" # le cookie de session ne voyage qu'en HTTPS
+      SANCTUM_STATEFUL_DOMAINS: ${DOMAIN} # seul ce site peut ouvrir une session
+      CACHE_STORE: database
+      QUEUE_CONNECTION: sync
+    volumes:
+      - caddy_data:/data # certificats HTTPS : à conserver, sinon ils sont redemandés à chaque démarrage
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

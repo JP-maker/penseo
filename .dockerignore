@@ -1,0 +1,12 @@
+.git
+.env
+.env.*
+**/node_modules
+frontend/dist
+frontend/.angular
+backend/vendor
+backend/.env
+backend/storage/logs/*
+backend/storage/framework/cache/data/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*

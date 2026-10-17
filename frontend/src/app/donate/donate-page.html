@@ -1,0 +1,30 @@
+<main class="donate">
+  <a class="brand" href="/" (click)="home($event)">
+    <svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true">
+      <rect width="64" height="64" rx="14" fill="#fff" fill-opacity="0.12" />
+      <rect x="16" y="12" width="32" height="40" rx="6" fill="#fff" />
+      <path d="M24 31l6 6 11-12" fill="none" stroke="#0071bd" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    Penséo
+  </a>
+
+  <section class="card">
+    <h1>Soutenir Penséo</h1>
+    <p>
+      Penséo est un projet personnel, gratuit et sans publicité. Si l'application t'est utile, tu peux
+      m'offrir un café : chaque don m'aide à la faire vivre.
+    </p>
+
+    <img
+      class="qr"
+      src="paypal-qr.png"
+      width="240"
+      height="240"
+      alt="QR code PayPal : scanne-le avec ton téléphone pour faire un don"
+    />
+    <p class="hint">Scanne ce code avec l'appareil photo de ton téléphone. Le montant est libre. Merci !</p>
+
+  </section>
+
+  <a class="back" href="/" (click)="home($event)">← Retour aux notes</a>
+</main>

@@ -6,5 +6,5 @@
 export const APP_INFO = {
   version: '0.1.0',
   author: 'Jean-Philippe Carrazé',
-  contactEmail: 'jpcarraze@ik.me',
+  contactEmail: 'contact@penseo.fr',
 } as const;

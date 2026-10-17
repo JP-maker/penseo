@@ -110,6 +110,11 @@ export class NotesPage {
     });
   }
 
+  protected goToDonate(event: Event): void {
+    event.preventDefault();
+    void this.router.navigateByUrl('/don');
+  }
+
   protected goToLogin(): void {
     void this.router.navigateByUrl('/connexion');
   }

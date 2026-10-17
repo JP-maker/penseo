@@ -12,5 +12,10 @@ export const routes: Routes = [
     title: 'Connexion · Penséo',
     loadComponent: () => import('./auth/login-page/login-page').then((m) => m.LoginPage),
   },
+  {
+    path: 'don',
+    title: 'Soutenir Penséo',
+    loadComponent: () => import('./donate/donate-page').then((m) => m.DonatePage),
+  },
   { path: '**', redirectTo: '' },
 ];
